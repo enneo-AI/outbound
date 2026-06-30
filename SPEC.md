@@ -4,6 +4,8 @@
 
 Create a tiny public demo page where a visitor enters one phone number and triggers an Enneo outbound demo call.
 
+Current public demo URL: https://enneo.aleksa.ai/
+
 ## User
 
 Internal Enneo demo users and prospects during live demos. They should be able to request a call without seeing any technical details.
@@ -32,6 +34,7 @@ Internal Enneo demo users and prospects during live demos. They should be able t
 - Caller id: `43`
 - Demo scenario: proactive meter reading and optional Abschlag check.
 - Demo identity if asked by voicebot: contract `715559`, postal code `20249`, plausible meter reading `108234 kWh`.
+- Latest good test ticket: `#2194` on aleksa-dev.
 
 ## Safety Notes
 
@@ -41,4 +44,3 @@ This page can initiate real phone calls. Before public production use, add at le
 - per-number rate limiting
 - internal access protection
 - phone-number allowlist
-

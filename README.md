@@ -2,6 +2,8 @@
 
 Small demo page for triggering an Enneo outbound voicebot call.
 
+Live URL: https://enneo.aleksa.ai/
+
 ## What It Does
 
 - Shows one phone-number input.
@@ -9,6 +11,7 @@ Small demo page for triggering an Enneo outbound voicebot call.
 - Calls a Netlify Function.
 - The function triggers `POST /api/acd/call/outbound`.
 - The response shows the created Enneo ticket id.
+- Current demo flow: Emma proactively collects a meter reading and can optionally ask about Abschlag changes.
 
 ## Local Development
 
@@ -41,7 +44,8 @@ If Emma asks for customer data:
 - Meter reading: `108234 kWh`
 - Optional Abschlag: `190 EUR starting next month`
 
+Latest verified test: ticket `#2194` on aleksa-dev.
+
 ## Safety
 
 This app can initiate real outbound calls. Do not expose it broadly without an allowlist, captcha, or rate limiting.
-
