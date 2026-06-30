@@ -1,6 +1,6 @@
 import { FormEvent, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { ArrowRight, CheckCircle2, Loader2, Phone, ShieldCheck } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Loader2, Phone } from 'lucide-react'
 
 type CallState =
   | { status: 'idle' }
@@ -80,65 +80,46 @@ export default function App() {
   }
 
   return (
-    <main className="min-h-screen bg-[#eef1f5] text-ink">
-      <section className="mx-auto flex min-h-screen w-full max-w-6xl flex-col justify-center px-5 py-8 sm:px-8">
+    <main className="brand-shell min-h-screen overflow-hidden bg-brand-navy text-white">
+      <section className="relative z-10 mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 sm:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: 'easeOut' }}
-          className="grid items-center gap-8 lg:grid-cols-[1fr_420px]"
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full"
         >
-          <div className="max-w-2xl">
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-line bg-white px-3 py-2 text-sm font-medium text-muted shadow-sm">
-              <ShieldCheck className="h-4 w-4 text-accent" />
-              Enneo outbound voicebot demo
-            </div>
-
-            <h1 className="max-w-3xl text-5xl font-semibold leading-[1.02] tracking-normal text-ink sm:text-6xl">
-              Trigger a proactive utility call.
-            </h1>
-
-            <p className="mt-6 max-w-xl text-lg leading-8 text-muted">
-              Enter a phone number and Emma will start the meter-reading demo call.
-              The call creates a live Enneo phone ticket with transcript, tool calls,
-              and recording.
-            </p>
-
-            <div className="mt-10 grid max-w-xl gap-3 sm:grid-cols-3">
-              {[
-                ['01', 'Outbound call starts'],
-                ['02', 'Customer identifies'],
-                ['03', 'Meter reading is captured'],
-              ].map(([step, label]) => (
-                <motion.div
-                  key={step}
-                  whileHover={{ y: -3 }}
-                  transition={{ type: 'spring', stiffness: 360, damping: 22 }}
-                  className="rounded-lg border border-white bg-white/70 p-4 shadow-sm"
-                >
-                  <div className="text-sm font-semibold text-signal">{step}</div>
-                  <div className="mt-2 text-sm font-medium leading-5 text-ink">{label}</div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
           <motion.form
             onSubmit={handleSubmit}
             layout
-            className="rounded-lg border border-white bg-white p-5 shadow-soft sm:p-6"
+            className="mx-auto w-full rounded-2xl border border-white/15 bg-white/[0.08] p-6 shadow-glass backdrop-blur-2xl sm:p-8"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-white">
-              <Phone className="h-5 w-5" />
+            <div className="flex items-center justify-between gap-4">
+              <img
+                src="/brand/enneo-logo-light.svg"
+                alt="Enneo"
+                className="h-8 w-auto"
+              />
+              <div className="rounded-full border border-white/15 bg-white/[0.07] px-3 py-1.5 font-mono text-[11px] uppercase leading-none text-lavender">
+                Outbound Demo
+              </div>
             </div>
 
-            <h2 className="mt-6 text-2xl font-semibold text-ink">Request a call</h2>
-            <p className="mt-2 text-sm leading-6 text-muted">
-              Use international format or a German local mobile number.
+            <div className="mt-12 flex justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/15 bg-white/[0.09] text-lavender shadow-inner-soft">
+                <Phone className="h-6 w-6" />
+              </div>
+            </div>
+
+            <h1 className="mx-auto mt-7 max-w-xl text-center text-4xl font-semibold leading-[1.04] text-white sm:text-5xl">
+              Emma ruft Sie gleich an.
+            </h1>
+            <p className="mx-auto mt-5 max-w-lg text-center text-base leading-7 text-white/70 sm:text-lg">
+              Geben Sie eine Telefonnummer ein. Enneo startet einen proaktiven
+              Demo-Anruf zur Zählerstandserfassung.
             </p>
 
-            <label className="mt-7 block text-sm font-medium text-ink" htmlFor="phone">
-              Phone number
+            <label className="mt-10 block font-mono text-xs uppercase text-lavender" htmlFor="phone">
+              Telefonnummer
             </label>
             <input
               id="phone"
@@ -150,33 +131,38 @@ export default function App() {
               }}
               placeholder="+491607763741"
               autoComplete="tel"
-              className="mt-2 h-12 w-full rounded-lg border border-line bg-panel px-4 text-base text-ink outline-none transition focus:border-accent focus:bg-white focus:ring-4 focus:ring-accent/10"
+              className="mt-3 h-14 w-full rounded-xl border border-white/15 bg-white/[0.1] px-4 text-base text-white outline-none transition placeholder:text-white/35 focus:border-lavender focus:bg-white/[0.14] focus:ring-4 focus:ring-purple/20"
             />
 
-            <div className="mt-2 min-h-5 text-xs text-muted">
-              {phoneNumber.trim() ? `Will call: ${normalized}` : ' '}
+            <div className="mt-3 min-h-5 font-mono text-xs text-white/45">
+              {phoneNumber.trim() ? `Anrufziel: ${normalized}` : ' '}
             </div>
 
             <motion.button
               type="submit"
               disabled={!canSubmit}
-              whileHover={canSubmit ? { y: -2 } : undefined}
-              whileTap={canSubmit ? { scale: 0.98 } : undefined}
-              transition={{ type: 'spring', stiffness: 400, damping: 18 }}
-              className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-ink px-4 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:bg-muted/40"
+              whileHover={canSubmit ? { y: -1 } : undefined}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+              className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-purple px-4 text-sm font-semibold text-white shadow-purple transition hover:bg-purple-dark disabled:cursor-not-allowed disabled:bg-white/15 disabled:text-white/40 disabled:shadow-none"
             >
               {callState.status === 'loading' ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Starting call
+                  Anruf wird gestartet
                 </>
               ) : (
                 <>
-                  Start outbound call
+                  Outbound Call starten
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
             </motion.button>
+
+            <div className="mt-6 grid grid-cols-3 gap-2 border-t border-white/10 pt-5 font-mono text-[11px] uppercase text-white/45">
+              <div>Zählerstand</div>
+              <div className="text-center">Live Ticket</div>
+              <div className="text-right">Emma</div>
+            </div>
 
             <AnimatePresence mode="wait">
               {callState.status === 'success' && (
@@ -185,13 +171,15 @@ export default function App() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  className="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900"
+                  className="mt-5 rounded-xl border border-emerald-300/30 bg-emerald-300/10 p-4 text-sm text-emerald-50"
                 >
                   <div className="flex items-center gap-2 font-semibold">
                     <CheckCircle2 className="h-4 w-4" />
-                    Call started
+                    Anruf gestartet
                   </div>
-                  <div className="mt-2 text-emerald-800">Ticket #{callState.ticketId}</div>
+                  <div className="mt-2 font-mono text-xs text-emerald-50/70">
+                    Ticket #{callState.ticketId}
+                  </div>
                 </motion.div>
               )}
 
@@ -201,7 +189,7 @@ export default function App() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900"
+                  className="mt-5 rounded-xl border border-red-300/30 bg-red-300/10 p-4 text-sm leading-6 text-red-50"
                 >
                   {callState.message}
                 </motion.div>
