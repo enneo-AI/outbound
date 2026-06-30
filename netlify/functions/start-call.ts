@@ -7,6 +7,33 @@ const CALLER_ID = Number(process.env.ACD_CALLER_ID ?? '43')
 const OUTBOUND_PHONE_NUMBER_ID =
   process.env.ACD_OUTBOUND_PHONE_NUMBER_ID ?? 'a5ea8b57-591a-4015-98e6-cbd15b9d799f'
 
+const OUTBOUND_OBJECTIVE = [
+  'Run a concise German outbound demo call for an energy utility.',
+  'This is not an inbound support call: Enneo called the customer proactively because a meter reading is missing for the next bill.',
+  'Primary task: identify the customer, collect the current meter reading, submit it, and confirm success.',
+  'Optional follow-up only after the meter reading is saved: ask once whether the customer would like to check or change the monthly Abschlag.',
+].join(' ')
+
+const OUTBOUND_CONTEXT = [
+  'Internal Enneo demo on aleksa-dev.',
+  'The caller acts as demo customer Susanne Ludwig.',
+  'Useful demo identity data if asked: contract number 715559 and postal code 20249.',
+  'Plausible meter reading example for this contract: 108234 kWh.',
+  'Good Abschlag example: 190 EUR starting next month.',
+].join(' ')
+
+const OUTBOUND_CONSTRAINTS = [
+  'Start with the configured first message.',
+  'Ask for consent before collecting data.',
+  'Identify the customer using contract number and postal code before account-specific actions.',
+  'After successful identification, do not ask what the customer wants to know about the contract. Instead continue the outbound task immediately and ask for the current meter reading in kWh.',
+  'Keep the conversation state anchored on the outbound objective, even after tool calls or customer identification.',
+  'Ask one question at a time.',
+  'Keep the call short and natural.',
+  'Do not collect bank details in this demo.',
+  'When the customer wants to end the call or after the task is complete, say a short goodbye and then hang up silently via the available hangup action. Do not say that you are ending the call, hanging up, calling a function, or using a tool.',
+].join(' ')
+
 function json(statusCode: number, body: Record<string, unknown>) {
   return {
     statusCode,
@@ -87,12 +114,9 @@ export const handler: Handler = async (event) => {
       outboundPhoneNumberId: OUTBOUND_PHONE_NUMBER_ID,
       isPhoneNumberHidden: false,
       isDynamicCall: true,
-      objective:
-        'Run a concise outbound demo call for an energy utility. Proactively collect the customer meter reading for an upcoming bill and, if the customer wants, collect a requested monthly Abschlag change.',
-      context:
-        'Internal Enneo demo on aleksa-dev. The caller acts as demo customer Susanne Ludwig. Useful demo identity data if asked: contract number 715559 and postal code 20249. Plausible meter reading example for this contract: 108234 kWh. Good Abschlag example: 190 EUR starting next month.',
-      constraints:
-        'Start with the configured first message. Ask for consent before collecting data. Identify the customer using contract number and postal code before account-specific actions. Ask one question at a time. Keep the call short and natural. Do not collect bank details in this demo. If the customer asks to end the call, close politely and hang up.',
+      objective: OUTBOUND_OBJECTIVE,
+      context: OUTBOUND_CONTEXT,
+      constraints: OUTBOUND_CONSTRAINTS,
     }),
   })
 
