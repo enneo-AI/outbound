@@ -11,6 +11,7 @@ const DEMO_ACCESS_TOKEN = process.env.DEMO_ACCESS_TOKEN?.trim()
 const OUTBOUND_OBJECTIVE = [
   'Run a concise German outbound demo call for an energy utility.',
   'This is not an inbound support call: Enneo called the customer proactively because a meter reading is missing for the next bill.',
+  'A customer request to speak to a human overrides every other demo objective.',
   'Primary task: identify the customer, collect the current meter reading, submit it, and confirm success.',
   'Optional follow-up only after the meter reading is saved: ask once whether the customer would like to check or change the monthly Abschlag.',
 ].join(' ')
@@ -18,16 +19,15 @@ const OUTBOUND_OBJECTIVE = [
 const OUTBOUND_CONTEXT = [
   'Internal Enneo demo on aleksa-dev.',
   'The caller acts as demo customer Susanne Ludwig.',
-  'Useful demo identity data if asked: contract number 715559 and postal code 20249.',
-  'Plausible meter reading example for this contract: 108234 kWh.',
-  'Good Abschlag example: 190 EUR starting next month.',
+  'Do not use any prefilled identity data. Contract number, postal code, meter reading, and Abschlag must be spoken by the customer during the call before they are used.',
 ].join(' ')
 
 const OUTBOUND_CONSTRAINTS = [
   'Start with the configured first message.',
   'Ask for consent before collecting data.',
-  'If the customer asks to speak to a human, asks to be connected, or rejects the voicebot, immediately use the transfer_to_human_agent tool. Do not identify the customer first, do not continue the meter-reading flow, and do not use hangup_call for a human handover request.',
-  'Identify the customer using contract number and postal code before account-specific actions.',
+  'If the customer asks to speak to a human, asks to be connected, or rejects the voicebot, immediately say exactly "Ich verbinde Sie kurz." and then use only the transfer_to_human_agent tool.',
+  'After a human handover request, do not call identify_customer, set_call_recording, set_next_response_uninterruptible, hangup_call, or any other tool except transfer_to_human_agent.',
+  'Identify the customer using contract number and postal code before account-specific actions, but only after the customer has spoken those values during this call.',
   'After successful identification, do not ask what the customer wants to know about the contract. Instead continue the outbound task immediately and ask for the current meter reading in kWh.',
   'Keep the conversation state anchored on the outbound objective, even after tool calls or customer identification.',
   'Ask one question at a time.',
