@@ -13,7 +13,7 @@ Internal Enneo demo users and prospects during live demos. They should be able t
 ## Flow
 
 1. User opens the page.
-2. User enters a phone number.
+2. User enters a phone number and the demo access token.
 3. Frontend validates and normalizes the number.
 4. Frontend calls a serverless endpoint.
 5. Serverless endpoint triggers `POST https://aleksa-dev.enneo.ai/api/acd/call/outbound`.
@@ -22,11 +22,12 @@ Internal Enneo demo users and prospects during live demos. They should be able t
 ## Scope
 
 - Single screen only.
-- One required input: phone number.
+- Required inputs: phone number and demo access token.
 - No auth.
 - No customer data collection.
 - No bank data.
 - Server-side ACD trigger to keep config out of the client bundle.
+- Server-side access-token check to prevent anonymous call spam.
 
 ## Current Demo Defaults
 
@@ -35,6 +36,7 @@ Internal Enneo demo users and prospects during live demos. They should be able t
 - Demo scenario: proactive meter reading and optional Abschlag check.
 - Demo identity if asked by voicebot: contract `715559`, postal code `20249`, plausible meter reading `108234 kWh`.
 - Latest good test ticket: `#2194` on aleksa-dev.
+- Required Netlify secret: `DEMO_ACCESS_TOKEN`.
 
 ## Safety Notes
 
@@ -44,3 +46,4 @@ This page can initiate real phone calls. Before public production use, add at le
 - per-number rate limiting
 - internal access protection
 - phone-number allowlist
+- dedicated demo access token

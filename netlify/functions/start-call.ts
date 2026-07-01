@@ -6,6 +6,7 @@ const ACD_OUTBOUND_URL =
 const CALLER_ID = Number(process.env.ACD_CALLER_ID ?? '43')
 const OUTBOUND_PHONE_NUMBER_ID =
   process.env.ACD_OUTBOUND_PHONE_NUMBER_ID ?? 'a5ea8b57-591a-4015-98e6-cbd15b9d799f'
+const DEMO_ACCESS_TOKEN = process.env.DEMO_ACCESS_TOKEN?.trim()
 
 const OUTBOUND_OBJECTIVE = [
   'Run a concise German outbound demo call for an energy utility.',
@@ -74,12 +75,20 @@ function isAllowed(phoneNumber: string) {
   return allowed.includes(phoneNumber)
 }
 
+function hasValidAccessToken(value: unknown) {
+  if (!DEMO_ACCESS_TOKEN) {
+    return false
+  }
+
+  return typeof value === 'string' && value.trim() === DEMO_ACCESS_TOKEN
+}
+
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return json(405, { message: 'Method not allowed.' })
   }
 
-  let parsed: { phoneNumber?: unknown }
+  let parsed: { phoneNumber?: unknown; accessToken?: unknown }
 
   try {
     parsed = JSON.parse(event.body || '{}')
@@ -89,6 +98,18 @@ export const handler: Handler = async (event) => {
 
   if (typeof parsed.phoneNumber !== 'string') {
     return json(400, { message: 'Phone number is required.' })
+  }
+
+  if (!DEMO_ACCESS_TOKEN) {
+    return json(503, {
+      message: 'The demo access token is not configured.',
+    })
+  }
+
+  if (!hasValidAccessToken(parsed.accessToken)) {
+    return json(401, {
+      message: 'Please enter a valid demo access token.',
+    })
   }
 
   const customerPhoneNumber = normalizePhoneNumber(parsed.phoneNumber)

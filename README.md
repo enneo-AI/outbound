@@ -7,6 +7,7 @@ Live URL: https://enneo.aleksa.ai/
 ## What It Does
 
 - Shows one phone-number input.
+- Requires a demo access token before a call can be started.
 - Normalizes German local numbers to E.164.
 - Calls a Netlify Function.
 - The function triggers `POST /api/acd/call/outbound`.
@@ -30,8 +31,11 @@ All values have aleksa-dev demo defaults, but should be set explicitly in Netlif
 ACD_OUTBOUND_URL=https://aleksa-dev.enneo.ai/api/acd/call/outbound
 ACD_CALLER_ID=43
 ACD_OUTBOUND_PHONE_NUMBER_ID=a5ea8b57-591a-4015-98e6-cbd15b9d799f
+DEMO_ACCESS_TOKEN=replace-with-a-long-random-demo-token
 ALLOWED_PHONE_NUMBERS=+491607763741
 ```
+
+`DEMO_ACCESS_TOKEN` is required. If it is missing, the function fails closed and does not trigger calls.
 
 `ALLOWED_PHONE_NUMBERS` is optional, but strongly recommended for public demos.
 
@@ -48,4 +52,4 @@ Latest verified test: ticket `#2194` on aleksa-dev.
 
 ## Safety
 
-This app can initiate real outbound calls. Do not expose it broadly without an allowlist, captcha, or rate limiting.
+This app can initiate real outbound calls. Keep `DEMO_ACCESS_TOKEN` private and rotate it if shared too broadly. Do not expose the page broadly without an allowlist, captcha, or rate limiting.

@@ -32,10 +32,12 @@ function isValidE164(value: string) {
 
 export default function App() {
   const [phoneNumber, setPhoneNumber] = useState('')
+  const [accessToken, setAccessToken] = useState('')
   const [callState, setCallState] = useState<CallState>({ status: 'idle' })
 
   const normalized = useMemo(() => normalizePhoneNumber(phoneNumber), [phoneNumber])
-  const canSubmit = isValidE164(normalized) && callState.status !== 'loading'
+  const canSubmit =
+    isValidE164(normalized) && accessToken.trim().length > 0 && callState.status !== 'loading'
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -54,7 +56,7 @@ export default function App() {
       const response = await fetch('/.netlify/functions/start-call', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber: normalized }),
+        body: JSON.stringify({ phoneNumber: normalized, accessToken }),
       })
 
       const payload = await response.json()
@@ -137,6 +139,22 @@ export default function App() {
             <div className="mt-3 min-h-5 font-mono text-xs text-white/45">
               {phoneNumber.trim() ? `Anrufziel: ${normalized}` : ' '}
             </div>
+
+            <label className="mt-5 block font-mono text-xs uppercase text-lavender" htmlFor="access-token">
+              Demo Access Token
+            </label>
+            <input
+              id="access-token"
+              type="password"
+              value={accessToken}
+              onChange={(event) => {
+                setAccessToken(event.target.value)
+                if (callState.status !== 'loading') setCallState({ status: 'idle' })
+              }}
+              placeholder="Token eingeben"
+              autoComplete="off"
+              className="mt-3 h-14 w-full rounded-xl border border-white/15 bg-white/[0.1] px-4 text-base text-white outline-none transition placeholder:text-white/35 focus:border-lavender focus:bg-white/[0.14] focus:ring-4 focus:ring-purple/20"
+            />
 
             <motion.button
               type="submit"
