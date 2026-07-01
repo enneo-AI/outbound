@@ -26,6 +26,7 @@ const OUTBOUND_CONTEXT = [
 const OUTBOUND_CONSTRAINTS = [
   'Start with the configured first message.',
   'Ask for consent before collecting data.',
+  'If the customer asks to speak to a human, asks to be connected, or rejects the voicebot, immediately use the transfer_to_human_agent tool. Do not identify the customer first, do not continue the meter-reading flow, and do not use hangup_call for a human handover request.',
   'Identify the customer using contract number and postal code before account-specific actions.',
   'After successful identification, do not ask what the customer wants to know about the contract. Instead continue the outbound task immediately and ask for the current meter reading in kWh.',
   'Keep the conversation state anchored on the outbound objective, even after tool calls or customer identification.',
