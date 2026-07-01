@@ -134,7 +134,7 @@ export const handler: Handler = async (event) => {
       customerPhoneNumber,
       outboundPhoneNumberId: OUTBOUND_PHONE_NUMBER_ID,
       isPhoneNumberHidden: false,
-      isDynamicCall: true,
+      isDynamicFlowCall: true,
       objective: OUTBOUND_OBJECTIVE,
       context: OUTBOUND_CONTEXT,
       constraints: OUTBOUND_CONSTRAINTS,
