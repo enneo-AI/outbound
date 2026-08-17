@@ -1,11 +1,10 @@
 import type { Handler } from '@netlify/functions'
 
-const ACD_OUTBOUND_URL =
-  process.env.ACD_OUTBOUND_URL ?? 'https://aleksa-dev.enneo.ai/api/acd/call/outbound'
-
-const CALLER_ID = Number(process.env.ACD_CALLER_ID ?? '43')
-const OUTBOUND_PHONE_NUMBER_ID =
-  process.env.ACD_OUTBOUND_PHONE_NUMBER_ID ?? 'a5ea8b57-591a-4015-98e6-cbd15b9d799f'
+const ENNEO_OUTBOUND_URL =
+  process.env.ENNEO_OUTBOUND_URL ??
+  'https://aleksa-dev.enneo.ai/api/mind/telephony/outboundCall'
+const ENNEO_API_TOKEN = process.env.ENNEO_API_TOKEN?.trim()
+const OUTBOUND_SUBCHANNEL_ID = Number(process.env.OUTBOUND_SUBCHANNEL_ID ?? '12')
 const DEMO_ACCESS_TOKEN = process.env.DEMO_ACCESS_TOKEN?.trim()
 
 const OUTBOUND_OBJECTIVE = [
@@ -113,6 +112,12 @@ export const handler: Handler = async (event) => {
     })
   }
 
+  if (!ENNEO_API_TOKEN) {
+    return json(503, {
+      message: 'The Enneo API token is not configured.',
+    })
+  }
+
   const customerPhoneNumber = normalizePhoneNumber(parsed.phoneNumber)
 
   if (!isValidE164(customerPhoneNumber)) {
@@ -127,22 +132,23 @@ export const handler: Handler = async (event) => {
     })
   }
 
-  const acdResponse = await fetch(ACD_OUTBOUND_URL, {
+  const enneoResponse = await fetch(ENNEO_OUTBOUND_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      Authorization: `Bearer ${ENNEO_API_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({
-      callerId: CALLER_ID,
-      customerPhoneNumber,
-      outboundPhoneNumberId: OUTBOUND_PHONE_NUMBER_ID,
+      phoneNumber: customerPhoneNumber,
+      subchannelId: OUTBOUND_SUBCHANNEL_ID,
       isPhoneNumberHidden: false,
-      isDynamicFlowCall: true,
       objective: OUTBOUND_OBJECTIVE,
       context: OUTBOUND_CONTEXT,
       constraints: OUTBOUND_CONSTRAINTS,
     }),
   })
 
-  const responseText = await acdResponse.text()
+  const responseText = await enneoResponse.text()
   let responsePayload: Record<string, unknown> = {}
 
   try {
@@ -151,8 +157,8 @@ export const handler: Handler = async (event) => {
     responsePayload = { raw: responseText }
   }
 
-  if (!acdResponse.ok) {
-    return json(acdResponse.status, {
+  if (!enneoResponse.ok) {
+    return json(enneoResponse.status, {
       message:
         typeof responsePayload.message === 'string'
           ? responsePayload.message
