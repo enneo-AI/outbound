@@ -12,6 +12,7 @@ Live URL: https://enneo.aleksa.ai/
 - Calls a Netlify Function.
 - The function calls Mind's authenticated `POST /telephony/outboundCall` endpoint.
 - Mind initiates the configured Enneo ACD outbound call internally.
+- The selected subchannel's dedicated AI agent owns the call objective and behavior; the demo does not append a second per-call briefing.
 - The response shows the created Enneo ticket id.
 - Current demo flow: Emma proactively collects a meter reading and can optionally ask about Abschlag changes.
 

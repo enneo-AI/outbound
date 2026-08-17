@@ -7,34 +7,6 @@ const ENNEO_API_TOKEN = process.env.ENNEO_API_TOKEN?.trim()
 const OUTBOUND_SUBCHANNEL_ID = Number(process.env.OUTBOUND_SUBCHANNEL_ID ?? '12')
 const DEMO_ACCESS_TOKEN = process.env.DEMO_ACCESS_TOKEN?.trim()
 
-const OUTBOUND_OBJECTIVE = [
-  'Run a concise German outbound demo call for an energy utility.',
-  'This is not an inbound support call: Enneo called the customer proactively because a meter reading is missing for the next bill.',
-  'A customer request to speak to a human overrides every other demo objective.',
-  'Primary task: identify the customer, collect the current meter reading, submit it, and confirm success.',
-  'Optional follow-up only after the meter reading is saved: ask once whether the customer would like to check or change the monthly Abschlag.',
-].join(' ')
-
-const OUTBOUND_CONTEXT = [
-  'Internal Enneo demo on aleksa-dev.',
-  'The caller acts as demo customer Susanne Ludwig.',
-  'Do not use any prefilled identity data. Contract number, postal code, meter reading, and Abschlag must be spoken by the customer during the call before they are used.',
-].join(' ')
-
-const OUTBOUND_CONSTRAINTS = [
-  'Start with the configured first message.',
-  'Ask for consent before collecting data.',
-  'If the customer asks to speak to a human, asks to be connected, or rejects the voicebot, immediately say exactly "Ich verbinde Sie kurz." and then use only the transfer_to_human_agent tool.',
-  'After a human handover request, do not call identify_customer, set_call_recording, set_next_response_uninterruptible, hangup_call, or any other tool except transfer_to_human_agent.',
-  'Identify the customer using contract number and postal code before account-specific actions, but only after the customer has spoken those values during this call.',
-  'After successful identification, do not ask what the customer wants to know about the contract. Instead continue the outbound task immediately and ask for the current meter reading in kWh.',
-  'Keep the conversation state anchored on the outbound objective, even after tool calls or customer identification.',
-  'Ask one question at a time.',
-  'Keep the call short and natural.',
-  'Do not collect bank details in this demo.',
-  'When the customer wants to end the call or after the task is complete, say a short goodbye and then hang up silently via the available hangup action. Do not say that you are ending the call, hanging up, calling a function, or using a tool.',
-].join(' ')
-
 function json(statusCode: number, body: Record<string, unknown>) {
   return {
     statusCode,
@@ -142,9 +114,6 @@ export const handler: Handler = async (event) => {
       phoneNumber: customerPhoneNumber,
       subchannelId: OUTBOUND_SUBCHANNEL_ID,
       isPhoneNumberHidden: false,
-      objective: OUTBOUND_OBJECTIVE,
-      context: OUTBOUND_CONTEXT,
-      constraints: OUTBOUND_CONSTRAINTS,
     }),
   })
 
