@@ -1,6 +1,6 @@
 # Enneo Outbound Demo — Handoff
 
-Last updated: 2026-08-17
+Last updated: 2026-08-19
 
 ## Live state
 
@@ -16,17 +16,17 @@ Last updated: 2026-08-17
 The browser calls the Netlify function `/.netlify/functions/start-call`. The function validates the demo access code, normalizes the phone number, applies the optional allowlist and then calls:
 
 ```text
-POST https://aleksa-dev.enneo.ai/api/mind/telephony/outboundCall
+POST https://aleksa-dev.enneo.ai/api/mind/telephony/testOutboundCall
 Authorization: Bearer <ENNEO_API_TOKEN>
 ```
 
-The request contains only `phoneNumber`, `subchannelId` and `isPhoneNumberHidden`. The selected subchannel's dedicated AI agent owns the objective and conversation behavior; the website intentionally sends no additional `objective`, `context` or `constraints` briefing.
+The request contains only `phoneNumber` and `subchannelId`. The selected subchannel's dedicated AI agent owns the objective and conversation behavior; the website intentionally sends no additional `objective`, `context` or `constraints` briefing.
 
 Netlify environment variables:
 
 - `DEMO_ACCESS_TOKEN` — public demo gate; never commit its value.
 - `ENNEO_API_TOKEN` — server-side Enneo API key/JWT; secret, never expose to the client or commit.
-- `ENNEO_OUTBOUND_URL` — optional override; defaults to the aleksa-dev Mind endpoint.
+- `ENNEO_TEST_OUTBOUND_URL` — optional override; defaults to the regular aleksa-dev Mind test endpoint.
 - `OUTBOUND_SUBCHANNEL_ID` — defaults to `12`.
 - `ALLOWED_PHONE_NUMBERS` — optional comma-separated allowlist.
 
@@ -34,16 +34,9 @@ Supabase, browser sessions, test users and local daemons are not part of this fl
 
 ## Enneo dependency
 
-The public authenticated Mind endpoint is implemented in Draft MR `enneo/mind!1803`:
+The website uses the existing authenticated Mind route `POST /telephony/testOutboundCall`, which is available in the regular `2.0.121` build and accepts `phoneNumber` plus `subchannelId` overrides. The demo therefore requires no custom Mind image, Admin-Portal deployment or instance-setting change.
 
-- Branch: `codex/fix-outbound-proxy`
-- Commit: `544cbbe3e`
-- Test image: `codex-fix-outbound-proxy-amd64`
-- Deployed only to `aleksa-dev`
-
-The old direct ACD endpoint `/api/acd/call/outbound` is internal-only since ACD MR `enneo/acd!137` / commit `f3553d1`. The website must never call it directly.
-
-Before this demo can rely on a normal Enneo release, MR !1803 must be reviewed, merged and shipped through the regular release process. Do not deploy the test image to customer or production instances.
+The old direct ACD endpoint `/api/acd/call/outbound` remains internal-only. Draft MR `enneo/mind!1803` created a cleaner future public endpoint, but the demo no longer depends on that MR or its temporary test image.
 
 ## Voice configuration on aleksa-dev
 
@@ -55,7 +48,7 @@ Ticket `2277` exposed a Realtime tool-argument error: the transcript contained t
 
 ## Verification
 
-- Invalid phone through Mind returns `400 Phone number is invalid` without initiating a call.
+- A valid phone with a deliberately nonexistent subchannel returns `404 Subchannel with id 999999 not found` before dialing, proving normal API authentication and body overrides.
 - Direct real API test created ticket `2278`; dialing worked and the destination returned SIP `486 busy`.
 - Netlify production deploy `0711a30` is published.
 - Safe Netlify smoke test with the valid demo gate and an invalid phone returns `400 Please enter a valid international phone number.`
@@ -67,4 +60,3 @@ Run one new real call through https://enneo.aleksa.ai after explicit confirmatio
 1. Emma reads the contract number and postal code back digit by digit before identification.
 2. `identify_customer.parameters.contractId` and `.zip` exactly match the confirmed transcript.
 3. A successful lookup continues directly to the missing-meter-reading objective.
-

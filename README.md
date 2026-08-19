@@ -10,7 +10,7 @@ Live URL: https://enneo.aleksa.ai/
 - Requires a demo access token before a call can be started.
 - Normalizes German local numbers to E.164.
 - Calls a Netlify Function.
-- The function calls Mind's authenticated `POST /telephony/outboundCall` endpoint.
+- The function calls Mind's existing authenticated `POST /telephony/testOutboundCall` endpoint.
 - Mind initiates the configured Enneo ACD outbound call internally.
 - The selected subchannel's dedicated AI agent owns the call objective and behavior; the demo does not append a second per-call briefing.
 - The response shows the created Enneo ticket id.
@@ -31,7 +31,7 @@ All values have aleksa-dev demo defaults, but should be set explicitly in Netlif
 
 ```bash
 ENNEO_API_TOKEN=replace-with-an-enneo-api-token
-ENNEO_OUTBOUND_URL=https://aleksa-dev.enneo.ai/api/mind/telephony/outboundCall
+ENNEO_TEST_OUTBOUND_URL=https://aleksa-dev.enneo.ai/api/mind/telephony/testOutboundCall
 OUTBOUND_SUBCHANNEL_ID=12
 DEMO_ACCESS_TOKEN=replace-with-a-long-random-demo-token
 ALLOWED_PHONE_NUMBERS=+491607763741
@@ -39,7 +39,7 @@ ALLOWED_PHONE_NUMBERS=+491607763741
 
 `DEMO_ACCESS_TOKEN` is required. If it is missing, the function fails closed and does not trigger calls.
 
-`ENNEO_API_TOKEN` is required and stays server-side in the Netlify Function. Direct public calls to ACD are intentionally blocked; Mind authenticates the request and calls ACD over the internal service network.
+`ENNEO_API_TOKEN` is required and stays server-side in the Netlify Function. The website uses the regular authenticated Mind test endpoint and requires no Admin-Portal or instance-setting changes.
 
 `ALLOWED_PHONE_NUMBERS` is optional, but strongly recommended for public demos.
 

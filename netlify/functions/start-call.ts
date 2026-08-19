@@ -1,8 +1,8 @@
 import type { Handler } from '@netlify/functions'
 
-const ENNEO_OUTBOUND_URL =
-  process.env.ENNEO_OUTBOUND_URL ??
-  'https://aleksa-dev.enneo.ai/api/mind/telephony/outboundCall'
+const ENNEO_TEST_OUTBOUND_URL =
+  process.env.ENNEO_TEST_OUTBOUND_URL ??
+  'https://aleksa-dev.enneo.ai/api/mind/telephony/testOutboundCall'
 const ENNEO_API_TOKEN = process.env.ENNEO_API_TOKEN?.trim()
 const OUTBOUND_SUBCHANNEL_ID = Number(process.env.OUTBOUND_SUBCHANNEL_ID ?? '12')
 const DEMO_ACCESS_TOKEN = process.env.DEMO_ACCESS_TOKEN?.trim()
@@ -55,6 +55,10 @@ function hasValidAccessToken(value: unknown) {
   return typeof value === 'string' && value.trim() === DEMO_ACCESS_TOKEN
 }
 
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return json(405, { message: 'Method not allowed.' })
@@ -104,7 +108,7 @@ export const handler: Handler = async (event) => {
     })
   }
 
-  const enneoResponse = await fetch(ENNEO_OUTBOUND_URL, {
+  const enneoResponse = await fetch(ENNEO_TEST_OUTBOUND_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${ENNEO_API_TOKEN}`,
@@ -113,7 +117,6 @@ export const handler: Handler = async (event) => {
     body: JSON.stringify({
       phoneNumber: customerPhoneNumber,
       subchannelId: OUTBOUND_SUBCHANNEL_ID,
-      isPhoneNumberHidden: false,
     }),
   })
 
@@ -131,14 +134,29 @@ export const handler: Handler = async (event) => {
       message:
         typeof responsePayload.message === 'string'
           ? responsePayload.message
+          : typeof responsePayload.error === 'string'
+            ? responsePayload.error
           : 'The outbound call could not be started.',
       details: responsePayload,
     })
   }
 
+  const downstreamResponse = isObject(responsePayload.response)
+    ? responsePayload.response
+    : responsePayload
+  const ticketId = downstreamResponse.ticketId
+  const channelId = downstreamResponse.channelId
+
+  if (!ticketId || !channelId) {
+    return json(502, {
+      message: 'The outbound call could not be started.',
+      details: responsePayload,
+    })
+  }
+
   return json(200, {
-    ticketId: responsePayload.ticketId,
-    channelId: responsePayload.channelId,
+    ticketId,
+    channelId,
     phoneNumber: customerPhoneNumber,
   })
 }
