@@ -5,7 +5,7 @@ import { ArrowRight, CheckCircle2, Loader2, Phone } from 'lucide-react'
 type CallState =
   | { status: 'idle' }
   | { status: 'loading' }
-  | { status: 'success'; ticketId: number; channelId: string }
+  | { status: 'success'; ticketId?: number }
   | { status: 'error'; message: string }
 
 function normalizePhoneNumber(input: string) {
@@ -68,7 +68,6 @@ export default function App() {
       setCallState({
         status: 'success',
         ticketId: payload.ticketId,
-        channelId: payload.channelId,
       })
     } catch (error) {
       setCallState({
@@ -195,9 +194,11 @@ export default function App() {
                     <CheckCircle2 className="h-4 w-4" />
                     Anruf gestartet
                   </div>
-                  <div className="mt-2 font-mono text-xs text-emerald-50/70">
-                    Ticket #{callState.ticketId}
-                  </div>
+                  {callState.ticketId && (
+                    <div className="mt-2 font-mono text-xs text-emerald-50/70">
+                      Ticket #{callState.ticketId}
+                    </div>
+                  )}
                 </motion.div>
               )}
 

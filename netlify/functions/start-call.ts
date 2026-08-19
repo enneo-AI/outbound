@@ -143,11 +143,13 @@ export const handler: Handler = async (event) => {
 
   const downstreamResponse = isObject(responsePayload.response)
     ? responsePayload.response
-    : responsePayload
-  const ticketId = downstreamResponse.ticketId
-  const channelId = downstreamResponse.channelId
+    : null
+  const downstreamFailed =
+    downstreamResponse?.success === false ||
+    typeof downstreamResponse?.error === 'string' ||
+    Array.isArray(downstreamResponse?.detail)
 
-  if (!ticketId || !channelId) {
+  if (responsePayload.success !== true || downstreamFailed) {
     return json(502, {
       message: 'The outbound call could not be started.',
       details: responsePayload,
@@ -155,8 +157,7 @@ export const handler: Handler = async (event) => {
   }
 
   return json(200, {
-    ticketId,
-    channelId,
+    accepted: true,
     phoneNumber: customerPhoneNumber,
   })
 }

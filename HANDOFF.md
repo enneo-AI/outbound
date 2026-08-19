@@ -22,6 +22,8 @@ Authorization: Bearer <ENNEO_API_TOKEN>
 
 The request contains only `phoneNumber` and `subchannelId`. The selected subchannel's dedicated AI agent owns the objective and conversation behavior; the website intentionally sends no additional `objective`, `context` or `constraints` briefing.
 
+`testOutboundCall` confirms synchronous request acceptance but creates the phone ticket asynchronously. The Netlify function therefore treats top-level `success: true` as accepted and does not require an immediate `ticketId` or `channelId`. Requiring those fields caused a false error even though tickets 2279 and 2280 were created and dialed.
+
 Netlify environment variables:
 
 - `DEMO_ACCESS_TOKEN` — public demo gate; never commit its value.
