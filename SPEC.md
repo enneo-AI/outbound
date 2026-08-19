@@ -16,8 +16,8 @@ Internal Enneo demo users and prospects during live demos. They should be able t
 2. User enters a phone number and the demo access token.
 3. Frontend validates and normalizes the number.
 4. Frontend calls a serverless endpoint.
-5. Serverless endpoint triggers `POST https://aleksa-dev.enneo.ai/api/acd/call/outbound`.
-6. UI shows progress, success with ticket id, or a helpful error.
+5. Serverless endpoint triggers authenticated `POST https://aleksa-dev.enneo.ai/api/mind/telephony/testOutboundCall`.
+6. UI shows request acceptance or a helpful error. Acceptance means dialing was requested, not that the phone rang or connected.
 
 ## Scope
 
@@ -26,16 +26,15 @@ Internal Enneo demo users and prospects during live demos. They should be able t
 - No auth.
 - No customer data collection.
 - No bank data.
-- Server-side ACD trigger to keep config out of the client bundle.
+- Server-side authenticated Mind trigger to keep credentials out of the client bundle.
 - Server-side access-token check to prevent anonymous call spam.
 
 ## Current Demo Defaults
 
-- Outbound line id: `a5ea8b57-591a-4015-98e6-cbd15b9d799f`
-- Caller id: `43`
-- Demo scenario: proactive meter reading and optional Abschlag check.
-- Demo identity if asked by voicebot: contract `715559`, postal code `20249`, plausible meter reading `108234 kWh`.
-- Latest good test ticket: `#2194` on aleksa-dev.
+- Subchannel id: `12`
+- Live agent: generic `Outbound Base Agent` (id `78`)
+- Live target scenario: dynamic post-service satisfaction follow-up controlled by Objective, Context and Constraints in the internal platform.
+- Website limitation: `testOutboundCall` does not forward those three briefing fields. The website remains a basic dial trigger until Mind MR `!1803` is available.
 - Required Netlify secret: `DEMO_ACCESS_TOKEN`.
 
 ## Safety Notes

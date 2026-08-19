@@ -12,9 +12,9 @@ Live URL: https://enneo.aleksa.ai/
 - Calls a Netlify Function.
 - The function calls Mind's existing authenticated `POST /telephony/testOutboundCall` endpoint.
 - Mind initiates the configured Enneo ACD outbound call internally.
-- The selected subchannel's dedicated AI agent owns the call objective and behavior; the demo does not append a second per-call briefing.
-- The response shows the created Enneo ticket id.
-- Current demo flow: Emma proactively collects a meter reading and can optionally ask about Abschlag changes.
+- The response confirms that the outbound request was accepted; dialing and connection happen asynchronously.
+- The selected subchannel currently uses a generic outbound base agent.
+- Limitation: this endpoint does not forward Objective, Context or Constraints, so the website is not the test harness for Alina's dynamic satisfaction scenario.
 
 ## Local Development
 
@@ -43,16 +43,11 @@ ALLOWED_PHONE_NUMBERS=+491607763741
 
 `ALLOWED_PHONE_NUMBERS` is optional, but strongly recommended for public demos.
 
-## Demo Script
+## Dynamic Briefing Test
 
-If Emma asks for customer data:
+Use the internal Enneo External Call drawer with Dynamic Call Flow for briefing-driven tests. The live agent on subchannel `12` expects the per-call Objective, Context and Constraints and currently targets Alina's post-technician satisfaction scenario.
 
-- Contract number: `715559`
-- Postal code: `20249`
-- Meter reading: `108234 kWh`
-- Optional Abschlag: `190 EUR starting next month`
-
-Latest verified test: ticket `#2194` on aleksa-dev.
+The public website can support the same scenario only after Mind MR `!1803` is deployed or merged and the Netlify function is switched to authenticated `/telephony/outboundCall`.
 
 ## Safety
 
